@@ -1,0 +1,44 @@
+{
+    "departments": [
+        {
+            "code": "CSC",
+            "name": "Computer Science"
+        },
+        {
+            "code": "MTH",
+            "name": "Mathematics"
+        },
+        {
+            "code": "PHY",
+            "name": "Physics"
+        },
+        {
+            "code": "CHM",
+            "name": "Chemistry"
+        },
+        {
+            "code": "BIO",
+            "name": "Biological Sciences"
+        },
+        {
+            "code": "ENG",
+            "name": "Engineering"
+        },
+        {
+            "code": "BUS",
+            "name": "Business Administration"
+        },
+        {
+            "code": "ECO",
+            "name": "Economics"
+        },
+        {
+            "code": "LAW",
+            "name": "Law"
+        },
+        {
+            "code": "MED",
+            "name": "Medicine"
+        }
+    ]
+}
