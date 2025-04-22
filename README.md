@@ -15,7 +15,7 @@ This project is a web-based event registration system designed for UNILAG studen
 1. Open the `index.html` file in a browser.
 2. Click the "Register for Event" button to open the registration modal.
 3. Fill in the required fields in the form.
-4. Navigate through the steps using the "Next" and "Previous" buttons.
+4. Navigate to Complete Registeration button.
 5. Submit the form after completing all required fields.
 
 
