@@ -1,174 +1,251 @@
+/* Radical New Color Scheme */
+:root {
+    --primary: #FF6B6B;
+    --secondary: #4ECDC4;
+    --dark: #292F36;
+    --light: #F7FFF7;
+    --accent: #FFE66D;
+    --error: #FF6B6B;
+}
+
 /* Base Styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
+* {
     margin: 0;
-    padding: 20px;
-    background-color: #f5f5f5;
-    color: #333;
-}
-
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 25px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 600px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: black;
-}
-
-/* Form Styles */
-.form-container {
-    margin-top: 20px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="email"],
-select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+    padding: 0;
     box-sizing: border-box;
 }
 
-.error-message {
-    color: #e74c3c;
-    font-size: 14px;
-    margin-top: 5px;
-}
-
-/* Progress Bar */
-.progress-bar {
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f4f8;
+    min-height: 100vh;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-    position: relative;
-}
-
-.progress-bar::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #ddd;
-    z-index: -1;
-}
-
-.step {
-    width: 150px;
-    height: 150px;
-    background-color: #ddd;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: #777;
+    align-items: center;
+    padding: 20px;
 }
 
-.step.active {
-    background-color: #3498db;
-    color: white;
-}
-
-/* Form Steps */
-.form-step {
-    display: none;
-}
-
-.form-step.active {
-    display: block;
-}
-
-/* Buttons */
-button {
-    background-color: #3498db;
+/* Trigger Button */
+.trigger-button {
+    background: linear-gradient(135deg, var(--primary), #FF8E8E);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    transition: all 0.3s ease;
 }
 
-button:hover {
-    background-color: #2980b9;
+.trigger-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
 }
 
-.button-group {
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(41, 47, 54, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    animation: modalAppear 0.4s ease-out;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--dark), #3a4750);
+    color: white;
+    padding: 20px 30px;
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
+    align-items: center;
 }
 
-.next-btn, .prev-btn {
-    width: 48%;
+.modal-header h2 {
+    font-size: 22px;
+    font-weight: 700;
 }
 
-.prev-btn {
-    background-color: #95a5a6;
+.close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 
-.prev-btn:hover {
-    background-color: #7f8c8d;
+.close-modal:hover {
+    transform: scale(1.2);
 }
 
-.submit-btn {
+.modal-body {
+    padding: 30px;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #e0e6ed;
+}
+
+.section-title {
+    color: var(--dark);
+    margin-bottom: 20px;
+    font-size: 18px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--secondary);
+}
+
+/* Input Groups */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.input-group input,
+.modern-select {
     width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e6ed;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s;
 }
 
-/* Utility Classes */
-.hidden {
-    display: none;
+.input-group input:focus,
+.modern-select:focus {
+    border-color: var(--secondary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+}
+
+/* Toggle Options */
+.toggle-options {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #e0e6ed;
+    margin-bottom: 15px;
+}
+
+.toggle-option {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.toggle-option.active {
+    background: var(--secondary);
+    color: white;
+}
+
+/* Dynamic Fields */
+#dynamicFields {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #f8fafc;
+    border-radius: 10px;
+}
+
+/* Submit Button */
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary), #FF8E8E);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.submit-btn span:last-child {
+    font-size: 20px;
+}
+
+/* Validation Messages */
+.validation-message {
+    font-size: 14px;
+    margin-top: 8px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.validation-message:not(:empty) {
+    background-color: #FFF3F3;
+    color: var(--error);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .modal-content {
-        width: 95%;
-        margin: 10% auto;
+    .modal-card {
+        margin: 20px;
+    }
+    
+    .modal-body {
+        padding: 20px;
     }
 }

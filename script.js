@@ -1,35 +1,49 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Modal elements
+    // DOM Elements
     const modal = document.getElementById('registrationModal');
-    const openBtn = document.getElementById('openModal');
-    const closeBtn = document.querySelector('.close');
-    
-    // Form elements
-    const form = document.getElementById('registrationForm');
+    const triggerBtn = document.getElementById('triggerBtn');
+    const closeBtn = document.querySelector('.close-modal');
+    const form = document.getElementById('regForm');
+    const toggleOptions = document.querySelectorAll('.toggle-option');
     const academicLevel = document.getElementById('academicLevel');
     const matricNo = document.getElementById('matricNo');
     const matricError = document.getElementById('matricError');
     const dob = document.getElementById('dob');
     const dobError = document.getElementById('dobError');
     const departmentSelect = document.getElementById('department');
-    const ugFields = document.getElementById('ugFields');
-    const pgFields = document.getElementById('pgFields');
-    const formSteps = document.querySelectorAll('.form-step');
-    const progressSteps = document.querySelectorAll('.progress-bar .step');
-    const nextBtns = document.querySelectorAll('.next-btn');
-    const prevBtns = document.querySelectorAll('.prev-btn');
-    
-    // Current year for validation
+    const dynamicFields = document.getElementById('dynamicFields');
     const currentYear = new Date().getFullYear();
-    
-    // Modal functionality
-    openBtn.addEventListener('click', () => modal.style.display = 'block');
-    closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
+
+    // Modal Control
+    triggerBtn.addEventListener('click', () => {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     });
-    
-    // Load departments from JSON
+
+    closeBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        form.reset();
+        resetForm();
+    }
+
+    // Toggle Options
+    toggleOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            toggleOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            academicLevel.value = this.dataset.value;
+            updateDynamicFields();
+            clearValidation();
+        });
+    });
+
+    // Load Departments
     fetch('departments.json')
         .then(response => response.json())
         .then(data => {
@@ -41,184 +55,113 @@ document.addEventListener('DOMContentLoaded', function() {
                 departmentSelect.appendChild(option);
             });
         })
-        .catch(error => {
-            console.error('Error loading departments:', error);
-            departmentSelect.innerHTML = '<option value="">Error loading departments</option>';
+        .catch(() => {
+            departmentSelect.innerHTML = '<option value="">Department load failed</option>';
         });
-    
-    // Dynamic form rendering based on academic level
-    academicLevel.addEventListener('change', function() {
-        const level = this.value;
-        
-        // Hide all academic fields first
-        ugFields.classList.add('hidden');
-        pgFields.classList.add('hidden');
-        
-        // Show relevant fields
-        if (level === 'undergraduate') {
-            ugFields.classList.remove('hidden');
-        } else if (level === 'postgraduate') {
-            pgFields.classList.remove('hidden');
-        }
-        
-        // Clear matric number and validation when level changes
-        matricNo.value = '';
-        matricError.textContent = '';
-    });
-    
-    // Matric number validation
-    matricNo.addEventListener('blur', function() {
+
+    // Dynamic Fields
+    function updateDynamicFields() {
         const level = academicLevel.value;
-        const matricValue = this.value.trim();
-        
-        if (!level) {
-            matricError.textContent = 'Please select academic level first';
-            return;
+        let html = '';
+
+        if (level === 'undergraduate') {
+            html = `
+                <div class="input-group">
+                    <label for="hostel">Hostel Preference*</label>
+                    <select id="hostel" class="modern-select" required>
+                        <option value="">Select option</option>
+                        <option value="male">Male Hostel</option>
+                        <option value="female">Female Hostel</option>
+                        <option value="off-campus">Off-Campus</option>
+                    </select>
+                </div>
+            `;
+        } else if (level === 'postgraduate') {
+            html = `
+                <div class="input-group">
+                    <label for="lastInstitution">Last Institution Attended*</label>
+                    <input type="text" id="lastInstitution" required>
+                </div>
+            `;
         }
-        
-        if (!matricValue) {
+
+        dynamicFields.innerHTML = html;
+    }
+
+    // Validation
+    matricNo.addEventListener('input', validateMatric);
+    dob.addEventListener('change', validateAge);
+
+    function validateMatric() {
+        const level = academicLevel.value;
+        const value = matricNo.value.trim();
+        let isValid = false;
+
+        if (!value) {
             matricError.textContent = 'Matric number is required';
             return;
         }
-        
-        let isValid = false;
-        const yearPattern = currentYear.toString();
-        
+
         if (level === 'undergraduate') {
-            const ugRegex = new RegExp(`^UG${yearPattern}\\d{4}$`);
-            isValid = ugRegex.test(matricValue);
-            if (!isValid) {
-                matricError.textContent = `Undergraduate format: UG${currentYear} followed by 4 digits (e.g., UG${currentYear}1023)`;
-            }
+            isValid = /^UG\d{8}$/.test(value) && value.includes(currentYear);
+            matricError.textContent = isValid ? '' : `Format: UG${currentYear}XXXX`;
         } else if (level === 'postgraduate') {
-            const pgRegex = new RegExp(`^PG${yearPattern}\\d{4}$`);
-            isValid = pgRegex.test(matricValue);
-            if (!isValid) {
-                matricError.textContent = `Postgraduate format: PG${currentYear} followed by 4 digits (e.g., PG${currentYear}0987)`;
-            }
+            isValid = /^PG\d{8}$/.test(value) && value.includes(currentYear);
+            matricError.textContent = isValid ? '' : `Format: PG${currentYear}XXXX`;
         }
-        
-        if (isValid) {
-            matricError.textContent = '';
-        }
-    });
-    
-    // Date of Birth validation
-    dob.addEventListener('change', function() {
+    }
+
+    function validateAge() {
         const level = academicLevel.value;
-        const dobValue = new Date(this.value);
-        const today = new Date();
+        const dobDate = new Date(dob.value);
         
-        if (!level) {
-            dobError.textContent = 'Please select academic level first';
-            return;
-        }
-        
-        if (!this.value) {
+        if (!dob.value) {
             dobError.textContent = 'Date of birth is required';
             return;
         }
+
+        const today = new Date();
+        let age = today.getFullYear() - dobDate.getFullYear();
+        const monthDiff = today.getMonth() - dobDate.getMonth();
         
-        let age = today.getFullYear() - dobValue.getFullYear();
-        const monthDiff = today.getMonth() - dobValue.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobValue.getDate())) {
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
             age--;
         }
-        
+
         if (level === 'undergraduate' && age >= 25) {
-            dobError.textContent = 'Undergraduate students must be younger than 25';
+            dobError.textContent = 'Must be under 25 years for undergraduate';
         } else if (level === 'postgraduate' && age < 22) {
-            dobError.textContent = 'Postgraduate students must be at least 22 years old';
+            dobError.textContent = 'Must be at least 22 years for postgraduate';
         } else {
             dobError.textContent = '';
         }
-    });
-    
-    // Multi-step form navigation
-    let currentStep = 1;
-    
-    function showStep(step) {
-        formSteps.forEach((formStep, index) => {
-            formStep.classList.toggle('active', index + 1 === step);
-        });
-        
-        progressSteps.forEach((progressStep, index) => {
-            progressStep.classList.toggle('active', index + 1 <= step);
-        });
-        
-        currentStep = step;
     }
-    
-    nextBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (validateStep(currentStep)) {
-                showStep(currentStep + 1);
-            }
-        });
-    });
-    
-    prevBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            showStep(currentStep - 1);
-        });
-    });
-    
-    function validateStep(step) {
-        let isValid = true;
-        
-        if (step === 1) {
-            // Validate all step 1 fields
-            if (!academicLevel.value) {
-                alert('Please select your academic level');
-                isValid = false;
-            }
-            
-            if (!matricNo.value.trim()) {
-                alert('Matric number is required');
-                isValid = false;
-            } else if (matricError.textContent) {
-                alert('Please fix matric number errors');
-                isValid = false;
-            }
-            
-            if (!fullName.value.trim()) {
-                alert('Full name is required');
-                isValid = false;
-            }
-            
-            if (!dob.value) {
-                alert('Date of birth is required');
-                isValid = false;
-            } else if (dobError.textContent) {
-                alert('Please fix date of birth errors');
-                isValid = false;
-            }
-            
-            if (!departmentSelect.value) {
-                alert('Please select your department');
-                isValid = false;
-            }
-        }
-        
-        return isValid;
+
+    function clearValidation() {
+        matricError.textContent = '';
+        dobError.textContent = '';
     }
-    
-    // Form submission
+
+    function resetForm() {
+        toggleOptions[0].classList.add('active');
+        toggleOptions[1].classList.remove('active');
+        academicLevel.value = 'undergraduate';
+        dynamicFields.innerHTML = '';
+        clearValidation();
+    }
+
+    // Form Submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        if (validateStep(currentStep)) {
-            // For PG students, validate last institution
-            if (academicLevel.value === 'postgraduate' && !lastInstitution.value.trim()) {
-                alert('Last institution attended is required for postgraduate students');
-                return;
-            }
-            
-            // Form is valid - process submission
-            alert('Registration submitted successfully!');
-            modal.style.display = 'none';
-            form.reset();
-            showStep(1);
+        validateMatric();
+        validateAge();
+        
+        if (!matricError.textContent && !dobError.textContent) {
+            alert('Registration successful!');
+            closeModal();
+        } else {
+            alert('Please correct the errors before submitting.');
         }
     });
 });
